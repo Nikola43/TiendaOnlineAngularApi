@@ -13,8 +13,8 @@ type UserController struct {
 }
 
 func NewUserController(db *sql.DB) *UserController {
-	userController := &UserController{db}
-	return userController
+	o := &UserController{db}
+	return o
 }
 
 func (u *UserController) getUser(w http.ResponseWriter, r *http.Request) {

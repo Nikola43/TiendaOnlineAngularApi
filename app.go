@@ -12,7 +12,6 @@ import (
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
-	"strconv"
 	"strings"
 )
 
@@ -20,7 +19,10 @@ import (
 type App struct {
 	Router *mux.Router
 	DB     *sql.DB
-	userController *UserController
+	ArticleController *ArticleController
+	UserController *UserController
+	InvoiceController *InvoiceController
+	InvoiceDetailController *InvoiceDetailController
 }
 
 func (a *App) Initialize(user, password, dbname string) {
@@ -33,7 +35,10 @@ func (a *App) Initialize(user, password, dbname string) {
 	}
 
 	a.Router = mux.NewRouter()
-	a.userController = NewUserController(a.DB)
+	a.ArticleController = NewArticleController(a.DB)
+	a.UserController = NewUserController(a.DB)
+	a.InvoiceController = NewInvoiceController(a.DB)
+	a.InvoiceDetailController = NewInvoiceDetailController(a.DB)
 	a.initializeRoutes()
 }
 
@@ -48,136 +53,37 @@ func (a *App) initializeRoutes() {
 	// AUTH JWT
 	a.Router.HandleFunc("/login", a.getToken).Methods("POST")
 
-	/*
-
 	// ARTICLES
-	a.Router.HandleFunc("/articles", a.getCalculators).Methods("GET")
-	a.Router.HandleFunc("/articles", a.createCalculator).Methods("POST")
-	a.Router.HandleFunc("/articles/{id:[0-9]+}", a.getCalculator).Methods("GET")
-	a.Router.HandleFunc("/articles/{id:[0-9]+}", a.updateCalculator).Methods("PUT")
-	a.Router.HandleFunc("/articles/{id:[0-9]+}", a.deleteCalculator).Methods("DELETE")
+	a.Router.HandleFunc("/article", a.ArticleController.getArticles).Methods("GET")
+	a.Router.HandleFunc("/article", a.ArticleController.createArticle).Methods("POST")
+	a.Router.HandleFunc("/article/{id:[0-9]+}", a.ArticleController.getArticle).Methods("GET")
+	a.Router.HandleFunc("/article/{id:[0-9]+}", a.ArticleController.updateArticle).Methods("PUT")
+	a.Router.HandleFunc("/article/{id:[0-9]+}", a.ArticleController.deleteArticle).Methods("DELETE")
 
 	// INVOICES
-	a.Router.HandleFunc("/invoices", AuthenticationMiddleware(a.getInvoices)).Methods("GET")
-	a.Router.HandleFunc("/invoices", AuthenticationMiddleware(a.createInvoice)).Methods("POST")
-	a.Router.HandleFunc("/invoices/{id:[0-9]+}", AuthenticationMiddleware(a.getInvoice)).Methods("GET")
-	a.Router.HandleFunc("/invoices/{id:[0-9]+}", AuthenticationMiddleware(a.updateInvoice)).Methods("PUT")
-	a.Router.HandleFunc("/invoices/{id:[0-9]+}", AuthenticationMiddleware(a.deleteInvoice)).Methods("DELETE")
+	a.Router.HandleFunc("/invoice", AuthenticationMiddleware(a.InvoiceController.getInvoices)).Methods("GET")
+	a.Router.HandleFunc("/invoice", AuthenticationMiddleware(a.InvoiceController.createInvoice)).Methods("POST")
+	a.Router.HandleFunc("/invoice/{id:[0-9]+}", AuthenticationMiddleware(a.InvoiceController.getInvoice)).Methods("GET")
+	a.Router.HandleFunc("/invoice/{id:[0-9]+}", AuthenticationMiddleware(a.InvoiceController.updateInvoice)).Methods("PUT")
+	a.Router.HandleFunc("/invoice/{id:[0-9]+}", AuthenticationMiddleware(a.InvoiceController.deleteInvoice)).Methods("DELETE")
 
-	// USER PROMOS
-	a.Router.HandleFunc("/user_promo/{id:[0-9]+}", AuthenticationMiddleware(a.getUserPromos)).Methods("GET")
-	a.Router.HandleFunc("/user_promo", AuthenticationMiddleware(a.createUserPromo)).Methods("POST")
-	a.Router.HandleFunc("/user_promo/emitter/{id:[0-9]+}", AuthenticationMiddleware(a.getUserPromoByReceiverID)).Methods("GET")
-	a.Router.HandleFunc("/user_promo/receiver/{id:[0-9]+}", AuthenticationMiddleware(a.getUserPromoByReceiverID)).Methods("GET")
-	a.Router.HandleFunc("/user_promo", AuthenticationMiddleware(a.updateUserPromo)).Methods("PUT")
-	a.Router.HandleFunc("/user_promo", AuthenticationMiddleware(a.deleteUserPromo)).Methods("DELETE")
 
-	*/
+	// INVOICE DETAILS
+	a.Router.HandleFunc("/invoice_details", AuthenticationMiddleware(a.InvoiceDetailController.getInvoiceDetails)).Methods("GET")
+	a.Router.HandleFunc("/invoice_details", AuthenticationMiddleware(a.InvoiceDetailController.createInvoiceDetail)).Methods("POST")
+	a.Router.HandleFunc("/invoice_details/{invoice_id:[0-9]+}/{article_id:[0-9]+}", AuthenticationMiddleware(a.InvoiceDetailController.getInvoiceDetail)).Methods("GET")
+	a.Router.HandleFunc("/invoice_details", AuthenticationMiddleware(a.InvoiceDetailController.updateInvoiceDetail)).Methods("PUT")
+	a.Router.HandleFunc("/invoice_details/{invoice_id:[0-9]+}/{article_id:[0-9]+}", AuthenticationMiddleware(a.InvoiceDetailController.deleteInvoiceDetail)).Methods("DELETE")
+
+
 
 	// USER
-	a.Router.HandleFunc("/user", AuthenticationMiddleware(a.userController.getUsers)).Methods("GET")
-	a.Router.HandleFunc("/user", AuthenticationMiddleware(a.userController.createUser)).Methods("POST")
-	a.Router.HandleFunc("/user/{id:[0-9]+}", AuthenticationMiddleware(a.userController.getUser)).Methods("GET")
-	a.Router.HandleFunc("/user/{id:[0-9]+}", AuthenticationMiddleware(a.userController.updateUser)).Methods("PUT")
-	a.Router.HandleFunc("/user/{id:[0-9]+}", AuthenticationMiddleware(a.userController.deleteUser)).Methods("DELETE")
+	a.Router.HandleFunc("/user", AuthenticationMiddleware(a.UserController.getUsers)).Methods("GET")
+	a.Router.HandleFunc("/user", AuthenticationMiddleware(a.UserController.createUser)).Methods("POST")
+	a.Router.HandleFunc("/user/{id:[0-9]+}", AuthenticationMiddleware(a.UserController.getUser)).Methods("GET")
+	a.Router.HandleFunc("/user/{id:[0-9]+}", AuthenticationMiddleware(a.UserController.updateUser)).Methods("PUT")
+	a.Router.HandleFunc("/user/{id:[0-9]+}", AuthenticationMiddleware(a.UserController.deleteUser)).Methods("DELETE")
 }
-
-
-// INVOICES ------------------------------------------------------------------------------------------------------------
-func (a *App) getInvoices(w http.ResponseWriter, r *http.Request) {
-	result, err := getInvoices(a.DB)
-	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
-	respondWithJSON(w, http.StatusOK, result)
-}
-
-func (a *App) createInvoice(w http.ResponseWriter, r *http.Request) {
-	var c Invoice
-	decoder := json.NewDecoder(r.Body)
-	if err := decoder.Decode(&c); err != nil {
-		respondWithError(w, http.StatusBadRequest, "Invalid resquest payload")
-		return
-	}
-	defer func() {
-		_ = r.Body.Close()
-	}()
-
-	if err := c.insertInvoice(a.DB); err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
-	respondWithJSON(w, http.StatusOK, map[string]string{"result": "success"})
-}
-
-func (a *App) getInvoice(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	id, err := strconv.Atoi(vars["id"])
-	if err != nil {
-		respondWithError(w, http.StatusBadRequest, "Invalid Invoice ID")
-		return
-	}
-
-	c := Invoice{ID: uint(id)}
-	if err := c.getInvoice(a.DB); err != nil {
-		switch err {
-		case sql.ErrNoRows:
-			respondWithError(w, http.StatusNotFound, "Invoice not found")
-		default:
-			respondWithError(w, http.StatusInternalServerError, err.Error())
-		}
-		return
-	}
-
-	respondWithJSON(w, http.StatusOK, c)
-}
-
-func (a *App) updateInvoice(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	id, err := strconv.Atoi(vars["id"])
-	if err != nil {
-		respondWithError(w, http.StatusBadRequest, "Invalid Invoice ID")
-		return
-	}
-
-	var c Invoice
-	decoder := json.NewDecoder(r.Body)
-	if err := decoder.Decode(&c); err != nil {
-		respondWithError(w, http.StatusBadRequest, "Invalid resquest payload")
-		return
-	}
-
-	defer func() {
-		_ = r.Body.Close()
-	}()
-
-	c.ID = uint(id)
-	if err := c.updateInvoice(a.DB); err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
-
-	respondWithJSON(w, http.StatusOK, map[string]string{"result": "success"})
-}
-
-func (a *App) deleteInvoice(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	id, err := strconv.Atoi(vars["id"])
-	if err != nil {
-		respondWithError(w, http.StatusBadRequest, "Invalid Invoice ID")
-		return
-	}
-
-	c := Invoice{ID: uint(id)}
-	if err := c.deleteInvoice(a.DB); err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
-
-	respondWithJSON(w, http.StatusOK, map[string]string{"result": "success"})
-}
-// INVOICES ------------------------------------------------------------------------------------------------------------
 
 
 func (a *App) getRefreshToken(w http.ResponseWriter, r *http.Request) {
