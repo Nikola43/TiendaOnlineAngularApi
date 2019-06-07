@@ -54,11 +54,11 @@ func (a *App) initializeRoutes() {
 	a.Router.HandleFunc("/login", a.getToken).Methods("POST")
 
 	// ARTICLES
-	a.Router.HandleFunc("/article", a.ArticleController.getArticles).Methods("GET")
-	a.Router.HandleFunc("/article", a.ArticleController.createArticle).Methods("POST")
-	a.Router.HandleFunc("/article/{id:[0-9]+}", a.ArticleController.getArticle).Methods("GET")
-	a.Router.HandleFunc("/article/{id:[0-9]+}", a.ArticleController.updateArticle).Methods("PUT")
-	a.Router.HandleFunc("/article/{id:[0-9]+}", a.ArticleController.deleteArticle).Methods("DELETE")
+	a.Router.HandleFunc("/articles", AuthenticationMiddleware(a.ArticleController.getArticles)).Methods("GET")
+	a.Router.HandleFunc("/article", AuthenticationMiddleware(a.ArticleController.createArticle)).Methods("POST")
+	a.Router.HandleFunc("/article/{id:[0-9]+}", AuthenticationMiddleware(a.ArticleController.getArticle)).Methods("GET")
+	a.Router.HandleFunc("/article/{id:[0-9]+}", AuthenticationMiddleware(a.ArticleController.updateArticle)).Methods("PUT")
+	a.Router.HandleFunc("/article/{id:[0-9]+}", AuthenticationMiddleware(a.ArticleController.deleteArticle)).Methods("DELETE")
 
 	// INVOICES
 	a.Router.HandleFunc("/invoice", AuthenticationMiddleware(a.InvoiceController.getInvoices)).Methods("GET")

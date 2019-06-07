@@ -3,23 +3,20 @@ package main
 import (
 	"database/sql"
 	"fmt"
-	"time"
 )
 
 type Article struct {
-	ID                    uint   `json:"id"`
-	UserID                uint   `json:"user_id"`
-	CreationDate          string `json:"creation_date"`
-	ShippingMethod        string `json:"shipping_method"`
-	PaymentMethod         string `json:"payment_method"`
-	EstimatedDeliveryDate string `json:"estimated_delivery_date"`
+	ID           uint   `json:"id"`
+	Name         string   `json:"name"`
+	Category     string `json:"category"`
+	UnitPrice    float64 `json:"unit_price"`
+	UnitsInStock float64 `json:"units_in_stock"`
 }
 
 func (o *Article) insertArticle(db *sql.DB) error {
-	date := fmt.Sprintf(time.Now().Format("2006-01-02 15:04:05"))
-	statement := fmt.Sprintf("INSERT INTO articles (user_id, creation_date, shipping_method, payment_method, estimated_delivery_date) "+
-		"VALUES('%d', '%s', '%s', '%s', '%s')",
-		o.UserID, date, o.ShippingMethod, o.PaymentMethod, o.EstimatedDeliveryDate)
+	statement := fmt.Sprintf("INSERT INTO articles (name, category, unit_price, units_in_stock) "+
+		"VALUES('%s', '%s', '%f', '%f')",
+		o.Name, o.Category, o.UnitPrice, o.UnitsInStock)
 
 	_, err := db.Exec(statement)
 	if err != nil {
@@ -30,15 +27,15 @@ func (o *Article) insertArticle(db *sql.DB) error {
 
 func (o *Article) getArticle(db *sql.DB) error {
 	statement := fmt.Sprintf("SELECT * FROM articles WHERE id=%d", o.ID)
-	return db.QueryRow(statement).Scan(&o)
+	return db.QueryRow(statement).Scan(&o.ID, &o.Name, &o.Category, &o.UnitPrice, &o.UnitsInStock)
 }
 
 func (o *Article) updateArticle(db *sql.DB) error {
 	statement := fmt.Sprintf(
 		"UPDATE articles "+
-			"SET shipping_method='%s', estimated_delivery_date='%s' " +
+			"SET name='%s', category='%s', unit_price=%f, units_in_stock=%f"+
 			"WHERE id=%d",
-		o.ShippingMethod, o.EstimatedDeliveryDate, o.ID)
+		o.Name, o.Category, o.UnitPrice, o.UnitsInStock, o.ID)
 	_, err := db.Exec(statement)
 	return err
 }
@@ -65,7 +62,7 @@ func getArticles(db *sql.DB) ([]Article, error) {
 
 	for rows.Next() {
 		var o Article
-		if err := rows.Scan(&o); err != nil {
+		if err := rows.Scan(&o.ID, &o.Name, &o.Category, &o.UnitPrice, &o.UnitsInStock); err != nil {
 			return nil, err
 		}
 		list = append(list, o)
