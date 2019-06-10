@@ -65,7 +65,7 @@ func getInvoices(db *sql.DB) ([]Invoice, error) {
 
 	for rows.Next() {
 		var o Invoice
-		if err := rows.Scan(&o); err != nil {
+		if err := rows.Scan(&o.ID, &o.UserID, &o.CreationDate, &o.ShippingMethod,  &o.PaymentMethod, &o.EstimatedDeliveryDate); err != nil {
 			return nil, err
 		}
 		list = append(list, o)

@@ -61,12 +61,11 @@ func (a *App) initializeRoutes() {
 	a.Router.HandleFunc("/article/{id:[0-9]+}", AuthenticationMiddleware(a.ArticleController.deleteArticle)).Methods("DELETE")
 
 	// INVOICES
-	a.Router.HandleFunc("/invoice", AuthenticationMiddleware(a.InvoiceController.getInvoices)).Methods("GET")
+	a.Router.HandleFunc("/invoices", AuthenticationMiddleware(a.InvoiceController.getInvoices)).Methods("GET")
 	a.Router.HandleFunc("/invoice", AuthenticationMiddleware(a.InvoiceController.createInvoice)).Methods("POST")
 	a.Router.HandleFunc("/invoice/{id:[0-9]+}", AuthenticationMiddleware(a.InvoiceController.getInvoice)).Methods("GET")
 	a.Router.HandleFunc("/invoice/{id:[0-9]+}", AuthenticationMiddleware(a.InvoiceController.updateInvoice)).Methods("PUT")
 	a.Router.HandleFunc("/invoice/{id:[0-9]+}", AuthenticationMiddleware(a.InvoiceController.deleteInvoice)).Methods("DELETE")
-
 
 	// INVOICE DETAILS
 	a.Router.HandleFunc("/invoice_details", AuthenticationMiddleware(a.InvoiceDetailController.getInvoiceDetails)).Methods("GET")
@@ -74,8 +73,6 @@ func (a *App) initializeRoutes() {
 	a.Router.HandleFunc("/invoice_details/{invoice_id:[0-9]+}/{article_id:[0-9]+}", AuthenticationMiddleware(a.InvoiceDetailController.getInvoiceDetail)).Methods("GET")
 	a.Router.HandleFunc("/invoice_details", AuthenticationMiddleware(a.InvoiceDetailController.updateInvoiceDetail)).Methods("PUT")
 	a.Router.HandleFunc("/invoice_details/{invoice_id:[0-9]+}/{article_id:[0-9]+}", AuthenticationMiddleware(a.InvoiceDetailController.deleteInvoiceDetail)).Methods("DELETE")
-
-
 
 	// USER
 	a.Router.HandleFunc("/user", AuthenticationMiddleware(a.UserController.getUsers)).Methods("GET")
