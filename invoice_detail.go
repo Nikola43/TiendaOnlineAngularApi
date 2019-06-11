@@ -6,9 +6,10 @@ import (
 )
 
 type InvoiceDetail struct {
-	InvoiceID uint `json:"invoice_id"`
-	ArticleID uint `json:"article_id"`
-	Quantity  uint `json:"quantity"`
+	InvoiceID   uint   `json:"invoice_id"`
+	ArticleID   uint   `json:"article_id"`
+	ArticleName string `json:"article_name"`
+	Quantity    uint   `json:"quantity"`
 }
 
 func (o *InvoiceDetail) insertInvoiceDetail(db *sql.DB) error {
@@ -27,9 +28,31 @@ func (o *InvoiceDetail) getInvoiceDetail(db *sql.DB) error {
 	return db.QueryRow(statement).Scan(&o.InvoiceID, &o.ArticleID, &o.Quantity)
 }
 
-func (o *InvoiceDetail) getInvoiceDetailByInvoiceID(db *sql.DB) error {
-	statement := fmt.Sprintf("SELECT * FROM invoice_details WHERE invoice_id=%d", o.InvoiceID)
-	return db.QueryRow(statement).Scan(&o.InvoiceID, &o.ArticleID, &o.Quantity)
+func (o *InvoiceDetail) getInvoiceDetailsByInvoiceID(db *sql.DB) ([]InvoiceDetail, error) {
+	statement := fmt.Sprintf("SELECT id.invoice_id, id.article_id, a.name, id.quantity "+
+		"FROM invoice_details as id "+
+		"INNER JOIN articles as a "+
+		"ON id.article_id = a.id "+
+		"WHERE invoice_id=%d", o.InvoiceID)
+	rows, err := db.Query(statement)
+	if err != nil {
+		return nil, err
+	}
+
+	defer func() {
+		_ = rows.Close()
+	}()
+
+	var list []InvoiceDetail
+
+	for rows.Next() {
+		var o InvoiceDetail
+		if err := rows.Scan(&o.InvoiceID, &o.ArticleID, &o.ArticleName, &o.Quantity); err != nil {
+			return nil, err
+		}
+		list = append(list, o)
+	}
+	return list, nil
 }
 
 func (o *InvoiceDetail) getInvoiceDetailByArticleID(db *sql.DB) error {

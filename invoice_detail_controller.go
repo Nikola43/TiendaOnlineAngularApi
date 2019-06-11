@@ -17,7 +17,6 @@ func NewInvoiceDetailController(db *sql.DB) *InvoiceDetailController {
 	return o
 }
 
-
 func (a *InvoiceDetailController) getInvoiceDetails(w http.ResponseWriter, r *http.Request) {
 	result, err := getInvoiceDetails(a.DB)
 	if err != nil {
@@ -45,6 +44,23 @@ func (a *InvoiceDetailController) createInvoiceDetail(w http.ResponseWriter, r *
 	respondWithJSON(w, http.StatusOK, map[string]string{"result": "success"})
 }
 
+func (a *InvoiceDetailController) getInvoiceDetailsFromInvoiceID(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	invoiceId, err := strconv.Atoi(vars["invoice_id"])
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid Invoince ID")
+		return
+	}
+
+	c := InvoiceDetail{InvoiceID: uint(invoiceId)}
+	result, err := c.getInvoiceDetailsByInvoiceID(a.DB)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	respondWithJSON(w, http.StatusOK, result)
+}
+
 func (a *InvoiceDetailController) getInvoiceDetail(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	invoiceId, err := strconv.Atoi(vars["invoice_id"])
@@ -52,14 +68,14 @@ func (a *InvoiceDetailController) getInvoiceDetail(w http.ResponseWriter, r *htt
 		respondWithError(w, http.StatusBadRequest, "Invalid Invoince ID")
 		return
 	}
-	
+
 	articleId, err := strconv.Atoi(vars["article_id"])
 	if err != nil {
 		respondWithError(w, http.StatusBadRequest, "Invalid Invoince ID")
 		return
 	}
 
-	c := InvoiceDetail{InvoiceID: uint(invoiceId), ArticleID:uint(articleId)}
+	c := InvoiceDetail{InvoiceID: uint(invoiceId), ArticleID: uint(articleId)}
 	if err := c.getInvoiceDetail(a.DB); err != nil {
 		switch err {
 		case sql.ErrNoRows:
@@ -74,7 +90,20 @@ func (a *InvoiceDetailController) getInvoiceDetail(w http.ResponseWriter, r *htt
 }
 
 func (a *InvoiceDetailController) updateInvoiceDetail(w http.ResponseWriter, r *http.Request) {
-	var c InvoiceDetail
+	vars := mux.Vars(r)
+	invoiceId, err := strconv.Atoi(vars["invoice_id"])
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid Invoince ID")
+		return
+	}
+
+	articleId, err := strconv.Atoi(vars["article_id"])
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid Invoince ID")
+		return
+	}
+
+	c := InvoiceDetail{InvoiceID: uint(invoiceId), ArticleID: uint(articleId)}
 	decoder := json.NewDecoder(r.Body)
 	if err := decoder.Decode(&c); err != nil {
 		respondWithError(w, http.StatusBadRequest, "Invalid resquest payload")
@@ -83,7 +112,7 @@ func (a *InvoiceDetailController) updateInvoiceDetail(w http.ResponseWriter, r *
 	defer func() {
 		_ = r.Body.Close()
 	}()
-	
+
 	if err := c.updateInvoiceDetail(a.DB); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -105,7 +134,7 @@ func (a *InvoiceDetailController) deleteInvoiceDetail(w http.ResponseWriter, r *
 		return
 	}
 
-	c := InvoiceDetail{InvoiceID: uint(invoiceId), ArticleID:uint(articleId)}
+	c := InvoiceDetail{InvoiceID: uint(invoiceId), ArticleID: uint(articleId)}
 	if err := c.deleteInvoiceDetail(a.DB); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return

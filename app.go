@@ -15,13 +15,12 @@ import (
 	"strings"
 )
 
-
 type App struct {
-	Router *mux.Router
-	DB     *sql.DB
-	ArticleController *ArticleController
-	UserController *UserController
-	InvoiceController *InvoiceController
+	Router                  *mux.Router
+	DB                      *sql.DB
+	ArticleController       *ArticleController
+	UserController          *UserController
+	InvoiceController       *InvoiceController
 	InvoiceDetailController *InvoiceDetailController
 }
 
@@ -68,10 +67,11 @@ func (a *App) initializeRoutes() {
 	a.Router.HandleFunc("/invoice/{id:[0-9]+}", AuthenticationMiddleware(a.InvoiceController.deleteInvoice)).Methods("DELETE")
 
 	// INVOICE DETAILS
+	a.Router.HandleFunc("/invoice_details/{invoice_id:[0-9]+}", AuthenticationMiddleware(a.InvoiceDetailController.getInvoiceDetailsFromInvoiceID)).Methods("GET")
 	a.Router.HandleFunc("/invoice_details", AuthenticationMiddleware(a.InvoiceDetailController.getInvoiceDetails)).Methods("GET")
 	a.Router.HandleFunc("/invoice_details", AuthenticationMiddleware(a.InvoiceDetailController.createInvoiceDetail)).Methods("POST")
 	a.Router.HandleFunc("/invoice_details/{invoice_id:[0-9]+}/{article_id:[0-9]+}", AuthenticationMiddleware(a.InvoiceDetailController.getInvoiceDetail)).Methods("GET")
-	a.Router.HandleFunc("/invoice_details", AuthenticationMiddleware(a.InvoiceDetailController.updateInvoiceDetail)).Methods("PUT")
+	a.Router.HandleFunc("/invoice_details/{invoice_id:[0-9]+}/{article_id:[0-9]+}", AuthenticationMiddleware(a.InvoiceDetailController.updateInvoiceDetail)).Methods("PUT")
 	a.Router.HandleFunc("/invoice_details/{invoice_id:[0-9]+}/{article_id:[0-9]+}", AuthenticationMiddleware(a.InvoiceDetailController.deleteInvoiceDetail)).Methods("DELETE")
 
 	// USER
@@ -82,7 +82,6 @@ func (a *App) initializeRoutes() {
 	a.Router.HandleFunc("/user/{id:[0-9]+}", AuthenticationMiddleware(a.UserController.deleteUser)).Methods("DELETE")
 }
 
-
 func (a *App) getRefreshToken(w http.ResponseWriter, r *http.Request) {
 
 }
@@ -92,7 +91,6 @@ func (a *App) getToken(w http.ResponseWriter, r *http.Request) {
 	var user User
 	_ = json.NewDecoder(r.Body).Decode(&user)
 	passwordHash := sha256.Sum256([]byte(user.Password))
-
 
 	if err := user.login(a.DB, user.Username, string(passwordHash[:])); err != nil {
 		switch err {
@@ -114,7 +112,7 @@ func (a *App) getToken(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err)
 	}
 
-	u := User{Username: user.Username, Token:tokenString}
+	u := User{Username: user.Username, Token: tokenString}
 	if err := u.updateUserTokenByUsername(a.DB); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
