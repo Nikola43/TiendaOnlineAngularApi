@@ -13,6 +13,7 @@ type Invoice struct {
 	ShippingMethod        string `json:"shipping_method"`
 	PaymentMethod         string `json:"payment_method"`
 	EstimatedDeliveryDate string `json:"estimated_delivery_date"`
+	UserName              string `json:"user_name"`
 }
 
 func (o *Invoice) insertInvoice(db *sql.DB) error {
@@ -36,7 +37,7 @@ func (o *Invoice) getInvoice(db *sql.DB) error {
 func (o *Invoice) updateInvoice(db *sql.DB) error {
 	statement := fmt.Sprintf(
 		"UPDATE invoices "+
-			"SET shipping_method='%s', estimated_delivery_date='%s' " +
+			"SET shipping_method='%s', estimated_delivery_date='%s' "+
 			"WHERE id=%d",
 		o.ShippingMethod, o.EstimatedDeliveryDate, o.ID)
 	_, err := db.Exec(statement)
@@ -53,7 +54,7 @@ func (o *Invoice) deleteInvoice(db *sql.DB) error {
 func getInvoices(db *sql.DB) ([]Invoice, error) {
 	var list []Invoice
 
-	rows, err := db.Query("SELECT * FROM invoices")
+	rows, err := db.Query("SELECT i.id, i.user_id, i.creation_date, i.shipping_method, i.payment_method, i.estimated_delivery_date, u.name FROM invoices as i INNER JOIN users as u ON i.user_id = u.id")
 
 	if err != nil {
 		return nil, err
@@ -65,7 +66,7 @@ func getInvoices(db *sql.DB) ([]Invoice, error) {
 
 	for rows.Next() {
 		var o Invoice
-		if err := rows.Scan(&o.ID, &o.UserID, &o.CreationDate, &o.ShippingMethod,  &o.PaymentMethod, &o.EstimatedDeliveryDate); err != nil {
+		if err := rows.Scan(&o.ID, &o.UserID, &o.CreationDate, &o.ShippingMethod, &o.PaymentMethod, &o.EstimatedDeliveryDate, &o.UserName); err != nil {
 			return nil, err
 		}
 		list = append(list, o)

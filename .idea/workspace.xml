@@ -3,10 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="2ba3db9d-47bf-4842-af01-bb6debe184d6" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app.go" beforeDir="false" afterPath="$PROJECT_DIR$/app.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/article_detail.go" beforeDir="false" afterPath="$PROJECT_DIR$/invoice_detail.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/invoice_detail_controller.go" beforeDir="false" afterPath="$PROJECT_DIR$/invoice_detail_controller.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/invoice_detail.go" beforeDir="false" afterPath="$PROJECT_DIR$/invoice_detail.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/invoices.go" beforeDir="false" afterPath="$PROJECT_DIR$/invoices.go" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -24,20 +22,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/invoices.go">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="192">
-              <caret line="35" column="23" selection-start-line="35" selection-start-column="23" selection-end-line="35" selection-end-column="23" />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/invoice_detail_controller.go">
+        <entry file="file://$PROJECT_DIR$/invoice_detail.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="458">
-              <caret line="137" column="29" selection-start-line="137" selection-start-column="29" selection-end-line="137" selection-end-column="29" />
+            <state relative-caret-position="295">
+              <caret line="20" column="19" lean-forward="true" selection-start-line="20" selection-start-column="19" selection-end-line="20" selection-end-column="19" />
             </state>
           </provider>
         </entry>
@@ -82,11 +71,11 @@
         <option value="$PROJECT_DIR$/article_detail_controller.go" />
         <option value="$PROJECT_DIR$/article_detail.go" />
         <option value="$PROJECT_DIR$/article.go" />
-        <option value="$PROJECT_DIR$/invoices.go" />
         <option value="$PROJECT_DIR$/main.go" />
-        <option value="$PROJECT_DIR$/invoice_detail.go" />
         <option value="$PROJECT_DIR$/app.go" />
         <option value="$PROJECT_DIR$/invoice_detail_controller.go" />
+        <option value="$PROJECT_DIR$/invoices.go" />
+        <option value="$PROJECT_DIR$/invoice_detail.go" />
       </list>
     </option>
   </component>
@@ -111,8 +100,8 @@
           <select />
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
       <pane id="Scope" />
+      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -185,18 +174,19 @@
       <workItem from="1560190366086" duration="67000" />
       <workItem from="1560191534664" duration="289000" />
       <workItem from="1560196204244" duration="22000" />
-      <workItem from="1560244154349" duration="6092000" />
+      <workItem from="1560244154349" duration="6283000" />
+      <workItem from="1560325770186" duration="1922000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="24464000" />
+    <option name="totallyTimeSpent" value="26577000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1920" height="1057" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.29233226" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.29552716" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Image Layers" order="2" />
       <window_info id="Designer" order="3" />
@@ -270,20 +260,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/invoice_controller.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="523">
-          <caret line="88" column="16" selection-start-line="88" selection-start-column="16" selection-end-line="88" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/invoices.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="192">
-          <caret line="35" column="23" selection-start-line="35" selection-start-column="23" selection-end-line="35" selection-end-column="23" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app.go">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="208">
@@ -291,17 +267,31 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/invoice_detail.go">
+    <entry file="file://$PROJECT_DIR$/invoice_controller.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="192">
-          <caret line="69" column="24" selection-start-line="69" selection-start-column="24" selection-end-line="69" selection-end-column="24" />
+        <state relative-caret-position="324">
+          <caret line="88" column="16" selection-start-line="88" selection-start-column="16" selection-end-line="88" selection-end-column="16" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/invoice_detail_controller.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="458">
-          <caret line="137" column="29" selection-start-line="137" selection-start-column="29" selection-end-line="137" selection-end-column="29" />
+        <state relative-caret-position="219">
+          <caret line="133" column="14" lean-forward="true" selection-start-line="133" selection-start-column="14" selection-end-line="133" selection-end-column="14" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/invoices.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1344">
+          <caret line="68" column="137" selection-start-line="68" selection-start-column="137" selection-end-line="68" selection-end-column="137" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/invoice_detail.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="295">
+          <caret line="20" column="19" lean-forward="true" selection-start-line="20" selection-start-column="19" selection-end-line="20" selection-end-column="19" />
         </state>
       </provider>
     </entry>

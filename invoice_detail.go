@@ -17,6 +17,7 @@ func (o *InvoiceDetail) insertInvoiceDetail(db *sql.DB) error {
 		"VALUES('%d', '%d', '%d')",
 		o.InvoiceID, o.ArticleID, o.Quantity)
 	_, err := db.Exec(statement)
+	fmt.Println(statement)
 	if err != nil {
 		return err
 	}
